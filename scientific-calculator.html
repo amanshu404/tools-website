@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scientific Calculator</title>
+  <style>
+    body {
+      background-color: #e6f2ff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .calculator {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .display {
+      width: 100%;
+      font-size: 24px;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      text-align: right;
+      color: #003366;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 18px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .wide {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 480px) {
+      .buttons {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator">
+  <input type="text" class="display" id="display" readonly />
+  <div class="buttons">
+    <button onclick="append('(')">(</button>
+    <button onclick="append(')')">)</button>
+    <button onclick="append('^')">xʸ</button>
+    <button onclick="append('sqrt(')">√</button>
+    <button onclick="clearDisplay()">C</button>
+
+    <button onclick="append('7')">7</button>
+    <button onclick="append('8')">8</button>
+    <button onclick="append('9')">9</button>
+    <button onclick="append('/')">÷</button>
+    <button onclick="append('log(')">log</button>
+
+    <button onclick="append('4')">4</button>
+    <button onclick="append('5')">5</button>
+    <button onclick="append('6')">6</button>
+    <button onclick="append('*')">×</button>
+    <button onclick="append('sin(')">sin</button>
+
+    <button onclick="append('1')">1</button>
+    <button onclick="append('2')">2</button>
+    <button onclick="append('3')">3</button>
+    <button onclick="append('-')">−</button>
+    <button onclick="append('cos(')">cos</button>
+
+    <button onclick="append('0')">0</button>
+    <button onclick="append('.')">.</button>
+    <button onclick="calculate()">=</button>
+    <button onclick="append('+')">+</button>
+    <button onclick="append('tan(')">tan</button>
+  </div>
+</div>
+
+<script>
+  const display = document.getElementById('display');
+
+  function append(val) {
+    display.value += val;
+  }
+
+  function clearDisplay() {
+    display.value = '';
+  }
+
+  function calculate() {
+    let expr = display.value
+      .replace(/√/g, 'Math.sqrt')
+      .replace(/log/g, 'Math.log10')
+      .replace(/sin/g, 'Math.sin')
+      .replace(/cos/g, 'Math.cos')
+      .replace(/tan/g, 'Math.tan')
+      .replace(/π/g, 'Math.PI')
+      .replace(/\^/g, '**')
+      .replace(/sqrt/g, 'Math.sqrt');
+
+    try {
+      const result = Function('"use strict";return (' + expr + ')')();
+      display.value = result;
+    } catch (e) {
+      display.value = "Error";
+    }
+  }
+</script>
+
+</body>
+</html>
