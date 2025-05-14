@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QR Code Generator & Scanner</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f8ff;
+      color: #005baf;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #007bff;
+    }
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 91, 175, 0.1);
+      padding: 20px;
+      margin: 20px 0;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      margin-top: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005baf;
+    }
+    canvas, video {
+      width: 100%;
+      max-width: 100%;
+      margin-top: 15px;
+    }
+    .qr-result {
+      margin-top: 10px;
+      font-weight: bold;
+      word-break: break-all;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>QR Code Generator & Scanner</h1>
+
+  <div class="container">
+    <h3>Generate QR Code</h3>
+    <textarea id="qrText" placeholder="Enter text or URL..."></textarea>
+    <button onclick="generateQRCode()">Generate</button>
+    <div id="qrcode"></div>
+    <button onclick="downloadQR()">Download QR Code</button>
+  </div>
+
+  <div class="container">
+    <h3>Scan QR Code</h3>
+    <video id="preview" autoplay playsinline></video>
+    <div class="qr-result" id="scanResult">Scan Result: None</div>
+    <button onclick="startScanner()">Start Scanner</button>
+    <button onclick="stopScanner()">Stop Scanner</button>
+  </div>
+
+  <!-- QR code generator library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <!-- QR code scanner library -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <script>
+    // QR Code Generation
+    function generateQRCode() {
+      const qrText = document.getElementById("qrText").value;
+      const qrcode = document.getElementById("qrcode");
+      qrcode.innerHTML = "";
+      if (qrText.trim() === "") {
+        alert("Please enter some text");
+        return;
+      }
+      QRCode.toCanvas(document.createElement('canvas'), qrText, { width: 256 }, function (error, canvas) {
+        if (error) console.error(error);
+        else {
+          canvas.id = "qrCanvas";
+          qrcode.appendChild(canvas);
+        }
+      });
+    }
+
+    // Download QR Code
+    function downloadQR() {
+      const canvas = document.getElementById("qrCanvas");
+      if (!canvas) return alert("Generate a QR code first.");
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    // QR Code Scanner
+    let html5QrCode;
+    function startScanner() {
+      const videoElement = document.getElementById("preview");
+      const resultElement = document.getElementById("scanResult");
+      html5QrCode = new Html5Qrcode("preview");
+
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            qrCodeMessage => {
+              resultElement.innerText = `Scan Result: ${qrCodeMessage}`;
+              stopScanner();
+            },
+            errorMessage => {}
+          );
+        }
+      }).catch(err => {
+        console.error("Camera error", err);
+        alert("Could not access camera.");
+      });
+    }
+
+    function stopScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear();
+        }).catch(err => console.error("Stop failed", err));
+      }
+    }
+  </script>
+</body>
+</html>

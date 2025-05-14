@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Text Encryptor/Decryptor</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e6f2ff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 123, 255, 0.2);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      resize: vertical;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    select, input[type="number"] {
+      padding: 8px;
+      margin-right: 10px;
+      font-size: 16px;
+      border: 2px solid #007bff;
+      border-radius: 6px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 500px) {
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Text Encryptor / Decryptor</h2>
+
+  <textarea id="inputText" rows="4" placeholder="Enter your text here..."></textarea>
+
+  <div class="controls">
+    <select id="method">
+      <option value="caesar">Caesar Cipher</option>
+      <option value="base64">Base64</option>
+    </select>
+
+    <input type="number" id="shift" value="3" min="1" max="25" placeholder="Shift" />
+
+    <button onclick="encryptText()">Encrypt</button>
+    <button onclick="decryptText()">Decrypt</button>
+  </div>
+
+  <textarea id="outputText" rows="4" placeholder="Result will appear here..." readonly></textarea>
+</div>
+
+<script>
+  function caesarShift(str, amount) {
+    return str.split('').map(char => {
+      let code = char.charCodeAt(0);
+      if (char >= 'a' && char <= 'z') {
+        return String.fromCharCode(((code - 97 + amount + 26) % 26) + 97);
+      } else if (char >= 'A' && char <= 'Z') {
+        return String.fromCharCode(((code - 65 + amount + 26) % 26) + 65);
+      }
+      return char;
+    }).join('');
+  }
+
+  function encryptText() {
+    const text = document.getElementById('inputText').value;
+    const method = document.getElementById('method').value;
+    const shift = parseInt(document.getElementById('shift').value) || 3;
+    let result = '';
+
+    if (method === 'caesar') {
+      result = caesarShift(text, shift);
+    } else if (method === 'base64') {
+      result = btoa(text);
+    }
+
+    document.getElementById('outputText').value = result;
+  }
+
+  function decryptText() {
+    const text = document.getElementById('inputText').value;
+    const method = document.getElementById('method').value;
+    const shift = parseInt(document.getElementById('shift').value) || 3;
+    let result = '';
+
+    if (method === 'caesar') {
+      result = caesarShift(text, -shift);
+    } else if (method === 'base64') {
+      try {
+        result = atob(text);
+      } catch {
+        result = 'Invalid Base64 input!';
+      }
+    }
+
+    document.getElementById('outputText').value = result;
+  }
+
+  // Hide Caesar shift input for Base64 method
+  document.getElementById('method').addEventListener('change', function () {
+    document.getElementById('shift').style.display = this.value === 'caesar' ? 'inline-block' : 'none';
+  });
+</script>
+
+</body>
+</html>

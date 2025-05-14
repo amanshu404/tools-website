@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Currency Converter</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e6f2ff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .converter {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #007bff;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result {
+      text-align: center;
+      font-size: 18px;
+      color: #003366;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .converter {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="converter">
+  <h2>Currency Converter</h2>
+  <label for="amount">Amount</label>
+  <input type="number" id="amount" placeholder="Enter amount" />
+
+  <label for="fromCurrency">From</label>
+  <select id="fromCurrency"></select>
+
+  <label for="toCurrency">To</label>
+  <select id="toCurrency"></select>
+
+  <button onclick="convertCurrency()">Convert</button>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  const fromCurrency = document.getElementById('fromCurrency');
+  const toCurrency = document.getElementById('toCurrency');
+  const result = document.getElementById('result');
+
+  // Fetch currency list
+  fetch('https://api.frankfurter.app/currencies')
+    .then(res => res.json())
+    .then(data => {
+      Object.entries(data).forEach(([code, name]) => {
+        const option1 = new Option(`${code} - ${name}`, code);
+        const option2 = new Option(`${code} - ${name}`, code);
+        fromCurrency.add(option1.cloneNode(true));
+        toCurrency.add(option2.cloneNode(true));
+      });
+      fromCurrency.value = 'USD';
+      toCurrency.value = 'INR';
+    });
+
+  function convertCurrency() {
+    const amount = parseFloat(document.getElementById('amount').value);
+    const from = fromCurrency.value;
+    const to = toCurrency.value;
+
+    if (!amount || from === to) {
+      result.innerHTML = 'Please enter a valid amount and choose different currencies.';
+      return;
+    }
+
+    const apiUrl = `https://api.frankfurter.app/latest?amount=${amount}&from=${from}&to=${to}`;
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+        result.innerHTML = `${amount} ${from} = <strong>${data.rates[to].toFixed(2)} ${to}</strong>`;
+      })
+      .catch(() => {
+        result.innerHTML = 'Conversion failed. Try again.';
+      });
+  }
+</script>
+
+</body>
+</html>

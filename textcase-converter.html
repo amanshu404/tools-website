@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Text Case Converter</title>
+  <style>
+    body {
+      background-color: #e6f2ff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .converter {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      font-size: 16px;
+      padding: 10px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .buttons, .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1 1 45%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 500px) {
+      button {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="converter">
+  <h2>Text Case Converter</h2>
+  <textarea id="textInput" placeholder="Enter or paste your text here..."></textarea>
+
+  <div class="buttons">
+    <button onclick="toUpperCase()">UPPERCASE</button>
+    <button onclick="toLowerCase()">lowercase</button>
+    <button onclick="toTitleCase()">Title Case</button>
+    <button onclick="toSentenceCase()">Sentence case</button>
+  </div>
+
+  <div class="actions">
+    <button onclick="copyText()">Copy Text</button>
+    <button onclick="downloadText()">Download Text</button>
+    <button onclick="clearText()">Clear</button>
+  </div>
+</div>
+
+<script>
+  const textInput = document.getElementById("textInput");
+
+  function toUpperCase() {
+    textInput.value = textInput.value.toUpperCase();
+  }
+
+  function toLowerCase() {
+    textInput.value = textInput.value.toLowerCase();
+  }
+
+  function toTitleCase() {
+    textInput.value = textInput.value
+      .toLowerCase()
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  function toSentenceCase() {
+    textInput.value = textInput.value
+      .toLowerCase()
+      .replace(/(^\s*\w|[\.\!\?]\s*\w)/g, function(c) {
+        return c.toUpperCase();
+      });
+  }
+
+  function copyText() {
+    textInput.select();
+    document.execCommand("copy");
+    alert("Text copied to clipboard!");
+  }
+
+  function downloadText() {
+    const blob = new Blob([textInput.value], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.download = "converted-text.txt";
+    link.href = URL.createObjectURL(blob);
+    link.click();
+  }
+
+  function clearText() {
+    textInput.value = "";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan EMI Calculator</title>
+  <style>
+    body {
+      background-color: #e6f2ff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .calculator {
+      background-color: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #003366;
+      text-align: center;
+    }
+
+    .result strong {
+      display: block;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 480px) {
+      .calculator {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator">
+  <h2>Loan EMI Calculator</h2>
+  <input type="number" id="amount" placeholder="Loan Amount (₹)" min="1" />
+  <input type="number" id="rate" placeholder="Annual Interest Rate (%)" step="0.01" min="0" />
+  <input type="number" id="tenure" placeholder="Loan Tenure (Months)" min="1" />
+  <button onclick="calculateEMI()">Calculate EMI</button>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  function calculateEMI() {
+    const amount = parseFloat(document.getElementById("amount").value);
+    const rate = parseFloat(document.getElementById("rate").value);
+    const tenure = parseInt(document.getElementById("tenure").value);
+    const result = document.getElementById("result");
+
+    if (!amount || !rate || !tenure || amount <= 0 || rate < 0 || tenure <= 0) {
+      result.innerHTML = "Please enter valid inputs.";
+      return;
+    }
+
+    const monthlyRate = rate / 12 / 100;
+    const emi = amount * monthlyRate * Math.pow(1 + monthlyRate, tenure) / (Math.pow(1 + monthlyRate, tenure) - 1);
+    const totalPayment = emi * tenure;
+    const totalInterest = totalPayment - amount;
+
+    result.innerHTML = `
+      <strong>Monthly EMI: ₹${emi.toFixed(2)}</strong>
+      <strong>Total Interest: ₹${totalInterest.toFixed(2)}</strong>
+      <strong>Total Payment: ₹${totalPayment.toFixed(2)}</strong>
+    `;
+  }
+</script>
+
+</body>
+</html>

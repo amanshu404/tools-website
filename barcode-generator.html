@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barcode Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f8ff;
+      color: #005baf;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #007bff;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 91, 175, 0.1);
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #005baf;
+    }
+
+    #barcode {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Barcode Generator</h1>
+
+  <div class="container">
+    <label for="barcodeData">Enter Text or Number:</label>
+    <input type="text" id="barcodeData" placeholder="e.g., 123456789012">
+
+    <label for="barcodeFormat">Select Format:</label>
+    <select id="barcodeFormat">
+      <option value="CODE128">Code 128</option>
+      <option value="EAN13">EAN-13</option>
+    </select>
+
+    <button onclick="generateBarcode()">Generate Barcode</button>
+
+    <div id="barcode"></div>
+
+    <button onclick="downloadBarcode()">Download Barcode</button>
+  </div>
+
+  <!-- JsBarcode library -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+  <script>
+    function generateBarcode() {
+      const data = document.getElementById("barcodeData").value.trim();
+      const format = document.getElementById("barcodeFormat").value;
+      const barcodeDiv = document.getElementById("barcode");
+
+      barcodeDiv.innerHTML = ""; // Clear previous
+
+      if (!data) {
+        alert("Please enter text or a number.");
+        return;
+      }
+
+      if (format === "EAN13" && (!/^\d{12,13}$/.test(data))) {
+        alert("EAN-13 requires 12 or 13 digits.");
+        return;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.id = "barcodeCanvas";
+      barcodeDiv.appendChild(canvas);
+
+      try {
+        JsBarcode(canvas, data, {
+          format: format,
+          displayValue: true,
+          fontSize: 16,
+          height: 100,
+          width: 2,
+          background: "#ffffff",
+          lineColor: "#000000"
+        });
+      } catch (e) {
+        alert("Failed to generate barcode. Check input and format.");
+      }
+    }
+
+    function downloadBarcode() {
+      const canvas = document.getElementById("barcodeCanvas");
+      if (!canvas) return alert("Please generate a barcode first.");
+      const link = document.createElement("a");
+      link.download = "barcode.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+  </script>
+</body>
+</html>

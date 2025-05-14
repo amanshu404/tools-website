@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Text Sorter Tool</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e6f2ff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .tool-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 0 12px rgba(0, 123, 255, 0.2);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 160px;
+      font-size: 16px;
+      padding: 10px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      resize: vertical;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-size: 14px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 500px) {
+      .options {
+        flex-direction: column;
+      }
+      .buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="tool-container">
+  <h2>Text Sorter Tool</h2>
+  <textarea id="inputText" placeholder="Paste your list here..."></textarea>
+
+  <div class="options">
+    <label><input type="radio" name="sortOrder" value="asc" checked> Ascending</label>
+    <label><input type="radio" name="sortOrder" value="desc"> Descending</label>
+    <label><input type="checkbox" id="removeDuplicates"> Remove Duplicates</label>
+    <label><input type="checkbox" id="ignoreCase"> Ignore Case</label>
+  </div>
+
+  <div class="buttons">
+    <button onclick="sortText()">Sort</button>
+    <button onclick="copyText()">Copy</button>
+    <button onclick="downloadText()">Download</button>
+  </div>
+
+  <textarea id="outputText" placeholder="Sorted text will appear here..." readonly></textarea>
+</div>
+
+<script>
+  function sortText() {
+    const input = document.getElementById('inputText').value.trim().split('\n');
+    const sortOrder = document.querySelector('input[name="sortOrder"]:checked').value;
+    const removeDuplicates = document.getElementById('removeDuplicates').checked;
+    const ignoreCase = document.getElementById('ignoreCase').checked;
+
+    let lines = input;
+
+    if (ignoreCase) {
+      lines = lines.map(line => line.toLowerCase());
+    }
+
+    if (removeDuplicates) {
+      lines = [...new Set(lines)];
+    }
+
+    lines.sort((a, b) => sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a));
+
+    document.getElementById('outputText').value = lines.join('\n');
+  }
+
+  function copyText() {
+    const output = document.getElementById('outputText');
+    output.select();
+    document.execCommand('copy');
+    alert("Text copied!");
+  }
+
+  function downloadText() {
+    const text = document.getElementById('outputText').value;
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "sorted_text.txt";
+    link.click();
+  }
+</script>
+
+</body>
+</html>

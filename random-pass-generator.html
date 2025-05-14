@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Number & Password Generator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f8ff;
+      color: #005baf;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #007bff;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 91, 175, 0.1);
+      padding: 20px;
+      max-width: 600px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    label {
+      margin-top: 10px;
+      display: block;
+      font-weight: 500;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row input {
+      flex: 1;
+    }
+
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8faff;
+      border-radius: 10px;
+      font-size: 16px;
+      word-wrap: break-word;
+    }
+
+    .button-group {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .button-group button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .button-group button:hover {
+      background-color: #005baf;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Random Number & Password Generator</h1>
+
+  <div class="container">
+    <!-- Random Number Generator -->
+    <label for="minNum">Min Value:</label>
+    <input type="number" id="minNum" placeholder="Enter minimum value" />
+
+    <label for="maxNum">Max Value:</label>
+    <input type="number" id="maxNum" placeholder="Enter maximum value" />
+
+    <button id="generateNumberBtn">Generate Random Number</button>
+    <div class="output" id="randomNumberOutput">Random number will appear here.</div>
+
+    <hr>
+
+    <!-- Password Generator -->
+    <label for="passwordLength">Password Length:</label>
+    <input type="number" id="passwordLength" value="12" min="6" max="32" />
+
+    <div class="row">
+      <label for="includeSymbols">Include Symbols:</label>
+      <input type="checkbox" id="includeSymbols" checked />
+    </div>
+
+    <div class="row">
+      <label for="includeUppercase">Include Uppercase:</label>
+      <input type="checkbox" id="includeUppercase" checked />
+    </div>
+
+    <button id="generatePasswordBtn">Generate Password</button>
+    <div class="output" id="passwordOutput">Generated password will appear here.</div>
+
+    <div class="button-group">
+      <button id="copyNumberBtn">Copy Number</button>
+      <button id="copyPasswordBtn">Copy Password</button>
+    </div>
+  </div>
+
+  <script>
+    // Random Number Generator
+    const minNumInput = document.getElementById("minNum");
+    const maxNumInput = document.getElementById("maxNum");
+    const generateNumberBtn = document.getElementById("generateNumberBtn");
+    const randomNumberOutput = document.getElementById("randomNumberOutput");
+
+    generateNumberBtn.addEventListener("click", () => {
+      const min = parseInt(minNumInput.value);
+      const max = parseInt(maxNumInput.value);
+      if (min >= max) {
+        randomNumberOutput.textContent = "Please enter a valid range.";
+        return;
+      }
+      const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+      randomNumberOutput.textContent = `Random Number: ${randomNum}`;
+    });
+
+    // Password Generator
+    const passwordLengthInput = document.getElementById("passwordLength");
+    const includeSymbolsCheckbox = document.getElementById("includeSymbols");
+    const includeUppercaseCheckbox = document.getElementById("includeUppercase");
+    const generatePasswordBtn = document.getElementById("generatePasswordBtn");
+    const passwordOutput = document.getElementById("passwordOutput");
+
+    const generatePassword = () => {
+      const length = parseInt(passwordLengthInput.value);
+      const useSymbols = includeSymbolsCheckbox.checked;
+      const useUppercase = includeUppercaseCheckbox.checked;
+
+      const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+      const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const symbolChars = "!@#$%^&*()_-+=<>?";
+      const numberChars = "0123456789";
+
+      let characters = lowercaseChars + numberChars;
+      if (useSymbols) characters += symbolChars;
+      if (useUppercase) characters += uppercaseChars;
+
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        password += characters[randomIndex];
+      }
+
+      passwordOutput.textContent = `Generated Password: ${password}`;
+    };
+
+    generatePasswordBtn.addEventListener("click", generatePassword);
+
+    // Copy to Clipboard
+    const copyNumberBtn = document.getElementById("copyNumberBtn");
+    const copyPasswordBtn = document.getElementById("copyPasswordBtn");
+
+    copyNumberBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(randomNumberOutput.textContent.replace("Random Number: ", "")).then(() => {
+        alert("Number copied to clipboard!");
+      });
+    });
+
+    copyPasswordBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(passwordOutput.textContent.replace("Generated Password: ", "")).then(() => {
+        alert("Password copied to clipboard!");
+      });
+    });
+  </script>
+
+</body>
+</html>

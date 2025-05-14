@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Word & Character Counter</title>
+  <style>
+    body {
+      background-color: #e6f2ff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .counter-container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 123, 255, 0.2);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .results {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .result-box {
+      background-color: #f0f8ff;
+      border-left: 4px solid #007bff;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .result-box strong {
+      display: block;
+      color: #007bff;
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    @media (max-width: 500px) {
+      .results {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="counter-container">
+  <h2>Word & Character Counter</h2>
+  <textarea id="textInput" placeholder="Type or paste your text here..." oninput="updateCount()"></textarea>
+
+  <div class="results">
+    <div class="result-box">
+      <strong>Words:</strong>
+      <span id="wordCount">0</span>
+    </div>
+    <div class="result-box">
+      <strong>Characters (with spaces):</strong>
+      <span id="charWithSpaces">0</span>
+    </div>
+    <div class="result-box">
+      <strong>Characters (without spaces):</strong>
+      <span id="charWithoutSpaces">0</span>
+    </div>
+    <div class="result-box">
+      <strong>Lines:</strong>
+      <span id="lineCount">0</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateCount() {
+    const text = document.getElementById("textInput").value;
+
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    const wordCount = words.length;
+
+    const charWithSpaces = text.length;
+    const charWithoutSpaces = text.replace(/\s/g, "").length;
+
+    const lineCount = text.split(/\n/).filter(line => line.trim() !== "").length;
+
+    document.getElementById("wordCount").textContent = wordCount;
+    document.getElementById("charWithSpaces").textContent = charWithSpaces;
+    document.getElementById("charWithoutSpaces").textContent = charWithoutSpaces;
+    document.getElementById("lineCount").textContent = lineCount;
+  }
+
+  // Initialize on load
+  updateCount();
+</script>
+
+</body>
+</html>

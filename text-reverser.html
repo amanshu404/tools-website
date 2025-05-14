@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Text Reverser Tool</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e6f2ff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 123, 255, 0.2);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      resize: vertical;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+    }
+
+    .options {
+      margin-bottom: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .options label {
+      font-size: 14px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 500px) {
+      .options, .buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Text Reverser Tool</h2>
+
+  <textarea id="inputText" placeholder="Enter or paste your text here..."></textarea>
+
+  <div class="options">
+    <label><input type="radio" name="reverseMode" value="text" checked> Reverse Entire Text</label>
+    <label><input type="radio" name="reverseMode" value="words"> Reverse Words</label>
+    <label><input type="radio" name="reverseMode" value="lines"> Reverse Lines</label>
+  </div>
+
+  <div class="buttons">
+    <button onclick="reverseText()">Reverse</button>
+    <button onclick="copyText()">Copy</button>
+    <button onclick="downloadText()">Download</button>
+  </div>
+
+  <textarea id="outputText" placeholder="Reversed text will appear here..." readonly></textarea>
+</div>
+
+<script>
+  function reverseText() {
+    const input = document.getElementById('inputText').value;
+    const mode = document.querySelector('input[name="reverseMode"]:checked').value;
+    let result = '';
+
+    if (mode === 'text') {
+      result = input.split('').reverse().join('');
+    } else if (mode === 'words') {
+      result = input
+        .split(' ')
+        .map(word => word.split('').reverse().join(''))
+        .join(' ');
+    } else if (mode === 'lines') {
+      result = input
+        .split('\n')
+        .map(line => line.split('').reverse().join(''))
+        .join('\n');
+    }
+
+    document.getElementById('outputText').value = result;
+  }
+
+  function copyText() {
+    const output = document.getElementById('outputText');
+    output.select();
+    document.execCommand('copy');
+    alert("Text copied!");
+  }
+
+  function downloadText() {
+    const text = document.getElementById('outputText').value;
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "reversed_text.txt";
+    link.click();
+  }
+</script>
+
+</body>
+</html>
