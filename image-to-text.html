@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image to Text (OCR)</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e6f2ff;
+      margin: 0;
+      padding: 20px;
+      color: #003366;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 {
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    input[type="file"] {
+      margin-bottom: 15px;
+    }
+    #image-preview {
+      max-width: 100%;
+      margin-top: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      display: none;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      resize: vertical;
+    }
+    button {
+      margin-top: 15px;
+      margin-right: 10px;
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #0066cc;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Image to Text (OCR)</h2>
+  <input type="file" id="imageInput" accept="image/*"><br>
+  <img id="image-preview" alt="Image Preview">
+  <div id="status"></div>
+  <textarea id="extractedText" placeholder="Extracted text will appear here..."></textarea><br>
+  <button onclick="copyText()">Copy Text</button>
+  <button onclick="downloadText()">Download Text</button>
+</div>
+
+<script>
+  const imageInput = document.getElementById('imageInput');
+  const imagePreview = document.getElementById('image-preview');
+  const status = document.getElementById('status');
+  const extractedTextArea = document.getElementById('extractedText');
+
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = 'block';
+
+        // Wait for image to load fully before OCR
+        imagePreview.onload = () => {
+          runOCR(e.target.result);
+        };
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert("Please upload a valid image file.");
+    }
+  });
+
+  function runOCR(imageSrc) {
+    status.textContent = 'Extracting text...';
+    extractedTextArea.value = '';
+
+    Tesseract.recognize(
+      imageSrc,
+      'eng',
+      { logger: m => console.log(m) }
+    ).then(result => {
+      extractedTextArea.value = result.data.text.trim();
+      status.textContent = 'Text extraction complete.';
+    }).catch(error => {
+      status.textContent = 'Error during OCR: ' + error.message;
+      console.error(error);
+    });
+  }
+
+  function copyText() {
+    extractedTextArea.select();
+    document.execCommand('copy');
+    alert('Text copied to clipboard!');
+  }
+
+  function downloadText() {
+    const blob = new Blob([extractedTextArea.value], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'extracted-text.txt';
+    link.click();
+  }
+</script>
+
+</body>
+</html>
