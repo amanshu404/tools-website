@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Resizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0faff;
+      color: #003366;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 102, 204, 0.1);
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #0066cc;
+    }
+
+    input[type="file"],
+    input[type="number"],
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #004999;
+    }
+
+    img {
+      width: 100%;
+      max-width: 100%;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Image Resizer Tool</h2>
+    <input type="file" id="imageInput" accept="image/*" />
+    <input type="number" id="widthInput" placeholder="Enter new width (px)" />
+    <input type="number" id="heightInput" placeholder="Enter new height (px)" />
+    <button onclick="resizeImage()">Resize Image</button>
+    <img id="preview" src="#" alt="Preview" style="display: none;" />
+    <a id="downloadLink" style="display: none;" download="resized-image.png">
+      <button>Download Resized Image</button>
+    </a>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const canvas = document.getElementById('canvas');
+    const downloadLink = document.getElementById('downloadLink');
+
+    let originalImage = new Image();
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        originalImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    originalImage.onload = function () {
+      preview.src = originalImage.src;
+      preview.style.display = 'block';
+    };
+
+    function resizeImage() {
+      const width = parseInt(document.getElementById('widthInput').value);
+      const height = parseInt(document.getElementById('heightInput').value);
+
+      if (!width || !height || isNaN(width) || isNaN(height)) {
+        alert('Please enter valid width and height!');
+        return;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(originalImage, 0, 0, width, height);
+
+      const resizedDataUrl = canvas.toDataURL('image/png');
+      preview.src = resizedDataUrl;
+      preview.style.display = 'block';
+      downloadLink.href = resizedDataUrl;
+      downloadLink.style.display = 'inline-block';
+    }
+  </script>
+</body>
+</html>
